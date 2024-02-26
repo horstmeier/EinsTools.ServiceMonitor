@@ -25,5 +25,12 @@ builder.Services.AddHostedService<Worker>(c =>
     new Worker( c.GetRequiredService<ILogger<Worker>>(), 
         c.GetRequiredService<IConfigurationWatcher>()));
 
+#if WINDOWS
+builder.Services.AddWindowsService(options =>
+{
+    options.ServiceName = "EinsTools ServiceMonitor";
+});
+#endif
+
 var host = builder.Build();
 host.Run();
