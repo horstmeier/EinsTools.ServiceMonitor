@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: .NET
 
 on:
   push:
@@ -7,18 +7,44 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image for Linux x64
-      run: docker build . --file ./EinsTools.ServiceMonitor/Dockerfile --build-arg RUNTIME=linux-x64 --tag service-monitor:linux
-    - name: Build the Docker image for Windows x64
-      run: docker build . --file ./EinsTools.ServiceMonitor/Dockerfile --build-arg RUNTIME=win-x64 --tag my-image-name:windows
-    - name: Build the Docker image for OSX x64
-      run: docker build . --file ./EinsTools.ServiceMonitor/Dockerfile --build-arg RUNTIME=osx-x64 --tag my-image-name:osx
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - name: Publish for Linux x64
+        run: dotnet publish -c Release -o ./publish/linux-x64 -r linux-x64 --self-contained true
+      - name: Publish for Windows x64
+        run: dotnet publish -c Release -o ./publish/win-x64 -r win-x64 --self-contained true  
+      - name: Publish for MacOS x64
+        run: dotnet publish -c Release -o ./publish/osx-x64 -r osx-x64 --self-contained true
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+      - name: Archive linux
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64
+          path: |
+            dist/linux-x64
+            !dist/**/*.md
+      - name: Archive windows
+        uses: actions/upload-artifact@v4
+        with:
+          name: win-x64
+          path: |
+            dist/win-x64
+            !dist/**/*.md
+      - name: Archive macos
+        uses: actions/upload-artifact@v4
+        with:
+          name: osx-x64
+          path: |
+            dist/osx-x64
+            !dist/**/*.md
       
       
