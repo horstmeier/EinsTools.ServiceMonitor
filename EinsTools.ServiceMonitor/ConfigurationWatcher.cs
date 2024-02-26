@@ -37,7 +37,7 @@ public class ConfigurationWatcher(
             // Now start all enabled services that are not running
             foreach (var (name, sd) in serviceDescriptions)
             {
-                if (sd.Enabled && !runningServices.ContainsKey(name))
+                if (sd.Enabled && !name.StartsWith("-") && !runningServices.ContainsKey(name))
                 {
                     var service = serviceFactory.CreateService(name, sd, stoppingToken);
                     runningServices = runningServices.Add(name, service);

@@ -11,7 +11,11 @@ The configuration of the services is done in the `appsettings.json` file.
 
 ## Configuration
 
-The configuration is done in the `appsettings.json` file.
+The configuration is done in the `appsettings.json` file. Changes to the configuration file are applied (almost) 
+immediately.
+
+If a service is no longer included in the configuration file or is disabled while running, it will be stopped. If the
+definition for a service is changed, the service will be stopped and started again with the new configuration.
 
 You can configure the services to be monitored in the `Services` section, which looks like this:
 
@@ -59,6 +63,17 @@ You can configure the services to be monitored in the `Services` section, which 
 - `RetryPolicy`: The retry policy for the service. This value is optional.
   - `MaxRetryCount`: The maximum number of retries. If the value is `-1`, the service will be restarted indefinitely. This value is optional. The default value is `-1`.
   - `DelayInSeconds`: The delay in seconds between retries. This value is optional. The default value is `5`.
+- `Enabled`: If true, the service will be started. This value is optional. The default value is `true`. 
+
+To disable a service temporarily, you can also add a '-' in front of the service name, like this:
+
+```json
+"Services": {
+  "-Service1": {
+    ...
+  }
+}
+```
 
 You can define a "global" retry policy for all services in the `RetryPolicy` section aside of the `Services` section, 
 which looks like this:
